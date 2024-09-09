@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Connexion - Gestion de Location{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Connexion</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="access_code">Code d'accès:</label>
+            <input type="text" name="access_code" id="access_code" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Se connecter</button>
+    </form>
+{% endblock %}

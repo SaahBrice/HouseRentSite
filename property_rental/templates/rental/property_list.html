@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Liste des Propriétés - Gestion de Location{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Liste des Propriétés</h1>
+    
+    <div class="row">
+        {% for property in properties %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ property.main_picture.url }}" class="card-img-top" alt="{{ property.category }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ property.category }} à {{ property.location }}</h5>
+                        <p class="card-text">
+                            {{ property.number_of_rooms }} pièces<br>
+                            {{ property.price_per_month }} € / mois
+                        </p>
+                        <a href="{% url 'rental:property_detail' property.pk %}" class="btn btn-primary">Voir les détails</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>Aucune propriété disponible pour le moment.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

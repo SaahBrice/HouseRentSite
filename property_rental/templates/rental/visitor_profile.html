@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Mon Profil - Gestion de Location{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Mon Profil</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ visitor.first_name }} {{ visitor.last_name }}</h5>
+            <p class="card-text">
+                <strong>Email:</strong> {{ visitor.email }}<br>
+                <strong>Téléphone:</strong> {{ visitor.phone_number }}<br>
+                <strong>Adresse:</strong> {{ visitor.address }}<br>
+                <strong>Sexe:</strong> {{ visitor.get_sex_display }}<br>
+                <strong>Bio:</strong> {{ visitor.bio }}
+            </p>
+        </div>
+    </div>
+{% endblock %}
