@@ -27,9 +27,9 @@ class VisitorAdmin(admin.ModelAdmin):
 
 @admin.register(Finance)
 class FinanceAdmin(admin.ModelAdmin):
-    list_display = ('user', 'number_payed_with', 'date_payed', 'motive', 'is_handled')
+    list_display = ('visitor', 'number_payed_with', 'date_payed', 'motive', 'is_handled')
     list_filter = ('is_handled', 'date_payed')
-    search_fields = ('user__username', 'motive')
+    search_fields = ('visitor__firstname', 'motive')
 
 @admin.register(Saved)
 class SavedAdmin(admin.ModelAdmin):

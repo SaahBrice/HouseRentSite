@@ -98,7 +98,7 @@ class Visitor(models.Model):
         super().save(*args, **kwargs)
 
 class Finance(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Utilisateur")
+    visitor = models.ForeignKey(Visitor, on_delete=models.CASCADE, verbose_name="Utilisateur", null=True)
     number_payed_with = models.CharField(max_length=100, verbose_name="Numéro de paiement")
     date_payed = models.DateTimeField(auto_now_add=True, verbose_name="Date de paiement")
     motive = models.CharField(max_length=255, verbose_name="Motif")
@@ -109,7 +109,7 @@ class Finance(models.Model):
         verbose_name_plural = "Finances"
 
     def __str__(self):
-        return f"Paiement de {self.user} le {self.date_payed}"
+        return f"Paiement de {self.visitor} le {self.date_payed}"
 
 class Saved(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, verbose_name="Propriété")

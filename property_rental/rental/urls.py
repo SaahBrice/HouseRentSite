@@ -6,6 +6,7 @@ app_name = 'rental'
 urlpatterns = [
     path('', views.home, name='home'),
     path('properties/', views.property_list, name='property_list'),
+    path('contact/', views.contact, name='contact'),
     path('properties/<int:pk>/', views.property_detail, name='property_detail'),
     path('categories/', views.category_list, name='category_list'),
     path('locations/', views.location_list, name='location_list'),

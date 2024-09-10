@@ -8,11 +8,14 @@ from django.db import IntegrityError
 
 def home(request):
     featured_properties = Property.objects.filter(is_available=True)[:3]
-    return render(request, 'rental/home.html', {'featured_properties': featured_properties})
+    return render(request, 'rental/index.html', {'featured_properties': featured_properties})
 
 def property_list(request):
     properties = Property.objects.filter(is_available=True)
     return render(request, 'rental/property_list.html', {'properties': properties})
+
+def contact(request):
+    return render(request, 'rental/contact.html')
 
 def property_detail(request, pk):
     property = get_object_or_404(Property, pk=pk)
@@ -82,41 +85,70 @@ def visitor_profile(request):
         return redirect('rental:visitor_login')
 
 
-        
-def booking_list(request):
-    # Assume we have some way to get the current visitor's bookings
-    bookings = BookingReservation.objects.filter(visitor=request.user.visitor)
-    return render(request, 'rental/booking_list.html', {'bookings': bookings})
 
-def booking_create(request):
-    if request.method == 'POST':
-        form = BookingForm(request.POST)
-        if form.is_valid():
-            booking = form.save(commit=False)
-            booking.visitor = request.user.visitor
-            booking.save()
-            messages.success(request, 'Booking request submitted successfully.')
-            return redirect('rental:booking_list')
+def booking_list(request):
+    visitor_id = request.session.get('visitor_id')
+    if visitor_id:
+        visitor = get_object_or_404(Visitor, pk=visitor_id)
+        bookings = BookingReservation.objects.filter(visitor=visitor)
+        return render(request, 'rental/booking_list.html', {'bookings': bookings})
     else:
-        form = BookingForm()
-    return render(request, 'rental/booking_create.html', {'form': form})
+        messages.error(request, 'Veuillez vous connecter pour voir vos réservations.')
+        return redirect('rental:visitor_login')
+
+
+
+def booking_create(request, property_id):
+    visitor_id = request.session.get('visitor_id')
+    if visitor_id:
+        visitor = get_object_or_404(Visitor, pk=visitor_id)
+        property = get_object_or_404(Property, pk=property_id)
+        if request.method == 'POST':
+            form = BookingForm(request.POST)
+            if form.is_valid():
+                booking = form.save(commit=False)
+                booking.visitor = visitor
+                booking.property = property
+                booking.save()
+                messages.success(request, 'Demande de réservation soumise avec succès.')
+                return redirect('rental:booking_list')
+        else:
+            form = BookingForm()
+        return render(request, 'rental/booking_create.html', {'form': form, 'property': property})
+    else:
+        messages.error(request, 'Veuillez vous connecter pour faire une réservation.')
+        return redirect('rental:visitor_login')
+
 
 def saved_properties(request):
-    saved = Saved.objects.filter(visitor=request.user.visitor)
-    return render(request, 'rental/saved_properties.html', {'saved': saved})
+    visitor_id = request.session.get('visitor_id')
+    if visitor_id:
+        visitor = get_object_or_404(Visitor, pk=visitor_id)
+        saved = Saved.objects.filter(visitor=visitor)
+        return render(request, 'rental/saved_properties.html', {'saved': saved})
+    else:
+        messages.error(request, 'Veuillez vous connecter pour voir vos propriétés sauvegardées.')
+        return redirect('rental:visitor_login')
+
+
 
 def rate_property(request, property_id):
-    property = get_object_or_404(Property, pk=property_id)
-    if request.method == 'POST':
-        form = RatingForm(request.POST)
-        if form.is_valid():
-            rating = form.save(commit=False)
-            rating.visitor = request.user.visitor
-            rating.property = property
-            rating.save()
-            messages.success(request, 'Thank you for your rating.')
-            return redirect('rental:property_detail', pk=property_id)
+    visitor_id = request.session.get('visitor_id')
+    if visitor_id:
+        visitor = get_object_or_404(Visitor, pk=visitor_id)
+        property = get_object_or_404(Property, pk=property_id)
+        if request.method == 'POST':
+            form = RatingForm(request.POST)
+            if form.is_valid():
+                rating = form.save(commit=False)
+                rating.visitor = visitor
+                rating.property = property
+                rating.save()
+                messages.success(request, 'Merci pour votre évaluation.')
+                return redirect('rental:property_detail', pk=property_id)
+        else:
+            form = RatingForm()
+        return render(request, 'rental/rate_property.html', {'form': form, 'property': property})
     else:
-        form = RatingForm()
-    return render(request, 'rental/rate_property.html', {'form': form, 'property': property})
-
+        messages.error(request, 'Veuillez vous connecter pour évaluer une propriété.')
+        return redirect('rental:visitor_login')
