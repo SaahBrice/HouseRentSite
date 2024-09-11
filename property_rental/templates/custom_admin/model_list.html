@@ -1,0 +1,68 @@
+{% extends "custom_admin/base.html" %}
+{% load custom_filters %}
+
+{% block title %}Liste de {{ model_name|title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Liste de {{ model_name|title }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'custom_admin:model_create' model_name %}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-plus"></i> Ajouter {{ model_name|title }}
+        </a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover table-bordered table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th style="width: 5%;">ID</th>
+                {% for field in field_names %}
+                    <th style="max-width: 200px;">{{ field|title }}</th>  <!-- Limit width of columns -->
+                {% endfor %}
+                <th style="width: 20%;">Actions</th>  <!-- Increased Actions column width -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for object in objects %}
+            <tr>
+                <td>{{ object.id }}</td>
+                {% for field in field_names %}
+                    <td style="max-width: 200px;" class="text-truncate">  <!-- Apply truncation to long content -->
+                        {% with value=object|getattribute:field %}
+                            {% if value|stringformat:"s"|slice:":4" == "http" %}
+                                <a href="{{ value }}" target="_blank">Lien</a>
+                            {% elif "ImageFieldFile" in value|stringformat:"s" %}
+                                {% if value %}
+                                    <img src="{{ value.url }}" alt="{{ field }}" class="img-thumbnail" style="max-width: 100px; max-height: 100px;">
+                                {% else %}
+                                    <span class="text-muted">Pas d'image</span>
+                                {% endif %}
+                            {% else %}
+                                {{ value|default_if_none:"" }}
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                {% endfor %}
+                <td style="white-space: nowrap;">  <!-- Prevent wrapping in actions column -->
+                    <a href="{% url 'custom_admin:model_update' model_name object.id %}" class="btn btn-sm btn-outline-primary d-inline-block me-2" style="width: 100px;">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                    <a href="{% url 'custom_admin:model_delete' model_name object.id %}" class="btn btn-sm btn-outline-danger d-inline-block" style="width: 100px;">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="{{ field_names|length|add:2 }}" class="text-center">
+                    <em>Aucune donnée disponible</em>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

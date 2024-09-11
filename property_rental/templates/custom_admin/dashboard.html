@@ -1,0 +1,104 @@
+{% extends "custom_admin/base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+    <div class="col">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Properties</h5>
+                <p class="card-text display-4">{{ total_properties }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Available Properties</h5>
+                <p class="card-text display-4">{{ available_properties }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Total Visitors</h5>
+                <p class="card-text display-4">{{ total_visitors }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Recent Bookings
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for booking in recent_bookings %}
+                    <li class="list-group-item">{{ booking.visitor.first_name }} {{ booking.visitor.last_name }} - {{ booking.date|date:"M d, Y" }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Recent Ratings
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for rating in recent_ratings %}
+                    <li class="list-group-item">{{ rating.visitor.first_name }} {{ rating.visitor.last_name }} - {{ rating.rating }} stars</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Popular Categories
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for category in popular_categories %}
+                    <li class="list-group-item">{{ category.name }} - {{ category.property_count }} properties</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Popular Locations
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for location in popular_locations %}
+                    <li class="list-group-item">{{ location.name }} - {{ location.property_count }} properties</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // You can add charts or other JavaScript functionality here
+</script>
+{% endblock %}

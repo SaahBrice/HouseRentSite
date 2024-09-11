@@ -1,0 +1,17 @@
+{% extends "custom_admin/base.html" %}
+
+{% block title %}Delete {{ model_name|title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Delete {{ model_name|title }}</h1>
+</div>
+
+<p>Are you sure you want to delete this {{ model_name }}?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+    <a href="{% url 'custom_admin:model_list' model_name %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

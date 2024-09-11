@@ -1,49 +1,521 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ property.category }} à {{ property.location }} - Gestion de Location{% endblock %}
 
 {% block content %}
-    <h1 class="mb-4">{{ property.category }} à {{ property.location }}</h1>
-    
-    <div class="row">
-        <div class="col-md-6">
-            <img src="{{ property.main_picture.url }}" class="img-fluid mb-3" alt="{{ property.category }}">
-            <div class="row">
-                {% for picture in property.picture_1, property.picture_2, property.picture_3, property.picture_4, property.picture_5 %}
-                    {% if picture %}
-                        <div class="col-4 mb-3">
-                            <img src="{{ picture.url }}" class="img-fluid" alt="Additional picture">
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+<div class="container-xxl py-5">
+    <div class="container">
+        <h1 class="mb-4 text-primary">{{ property.category }} à {{ property.location }}</h1>
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{{ property.main_picture.url }}" class="d-block w-100 img-fluid" style="height: 500px; object-fit: cover;" alt="{{ property.category }}">
                         </div>
-                    {% endif %}
-                {% endfor %}
+                        {% for picture in additional_pictures %}
+                            {% if picture %}
+                                <div class="carousel-item">
+                                    <img src="{{ picture.url }}" class="d-block w-100 img-fluid" style="height: 500px; object-fit: cover;" alt="Additional picture">
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Détails rapides</h5>
+                        <p class="card-text"><strong>Prix par mois:</strong> {{ property.price_per_month }} XAF</p>
+                        <p class="card-text"><strong>Surface totale:</strong> {{ property.total_surface_area }} m²</p>
+                        <p class="card-text"><strong>Chambres:</strong> {{ property.number_of_bedrooms }}</p>
+                        <p class="card-text"><strong>Salles de bain:</strong> {{ property.number_of_baths }}</p>
+                        <p class="card-text"><strong>Disponible à partir du:</strong> {{ property.date_available }}</p>
+                                <!-- Display rating stars -->
+                        <p class="card-text"><strong>Note moyenne:</strong>
+                            {% if average_rating > 0 %}
+                                <!-- Render stars based on the average rating -->
+                                <span class="rating-stars">
+                                    {% for i in stars_range %}
+                                        {% if i <= average_rating %}
+                                            <i class="fas fa-star text-warning"></i>  <!-- Filled star -->
+                                        {% else %}
+                                            <i class="far fa-star"></i>  <!-- Empty star -->
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                
+                            {% else %}
+                                <span>Aucune note</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between mt-3">
+                    <a href="#" id="noter-btn" class="btn btn-primary w-100 me-1 d-flex align-items-center justify-content-center" style="font-size: 1.2rem; padding: 0.75rem;">
+                        <i class="fas fa-star me-2"></i> Noter
+                    </a>
+                    <a href="#" id="reserve-btn" class="btn btn-success w-100 me-1 d-flex align-items-center justify-content-center" style="font-size: 1.2rem; padding: 0.75rem;">
+                        <i class="fas fa-calendar-check me-2"></i> Réserver
+                    </a>
+                </div>
+
+                
             </div>
         </div>
-        <div class="col-md-6">
-            <h2>Détails de la propriété</h2>
-            <ul class="list-group">
-                <li class="list-group-item"><strong>Catégorie:</strong> {{ property.category }}</li>
-                <li class="list-group-item"><strong>Emplacement:</strong> {{ property.location }}</li>
-                <li class="list-group-item"><strong>Adresse:</strong> {{ property.address }}</li>
-                <li class="list-group-item"><strong>Nombre de pièces:</strong> {{ property.number_of_rooms }}</li>
-                <li class="list-group-item"><strong>Nombre de chambres:</strong> {{ property.number_of_bedrooms }}</li>
-                <li class="list-group-item"><strong>Nombre de salles de bain:</strong> {{ property.number_of_baths }}</li>
-                <li class="list-group-item"><strong>Nombre de toilettes:</strong> {{ property.number_of_toilets }}</li>
-                <li class="list-group-item"><strong>Nombre de cuisines:</strong> {{ property.number_of_kitchens }}</li>
-                <li class="list-group-item"><strong>Surface totale:</strong> {{ property.total_surface_area }} m²</li>
-                <li class="list-group-item"><strong>Prix par mois:</strong> {{ property.price_per_month }} €</li>
-                <li class="list-group-item"><strong>Prix de réservation:</strong> {{ property.reservation_price }} €</li>
-                <li class="list-group-item"><strong>Frais de caution:</strong> {{ property.caution_fees }} €</li>
-                <li class="list-group-item"><strong>Période de contrat:</strong> {{ property.get_contract_period_display }}</li>
-                <li class="list-group-item"><strong>Disponible à partir du:</strong> {{ property.date_available }}</li>
-            </ul>
-            <div class="mt-3">
-                <h3>Description</h3>
-                <p>{{ property.description }}</p>
+        <div class="row mt-4">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="text-primary">Description</h2>
+                        <p>{{ property.description }}</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="text-primary">Détails complets de la propriété</h2>
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr><th>Catégorie</th><td>{{ property.category }}</td></tr>
+                                <tr><th>Emplacement</th><td>{{ property.location }}</td></tr>
+                                <tr><th>Adresse</th><td>{{ property.address }}</td></tr>
+                                <tr><th>Nombre de pièces</th><td>{{ property.number_of_rooms }}</td></tr>
+                                <tr><th>Nombre de chambres</th><td>{{ property.number_of_bedrooms }}</td></tr>
+                                <tr><th>Nombre de salles de bain</th><td>{{ property.number_of_baths }}</td></tr>
+                                <tr><th>Nombre de toilettes</th><td>{{ property.number_of_toilets }}</td></tr>
+                                <tr><th>Nombre de cuisines</th><td>{{ property.number_of_kitchens }}</td></tr>
+                                <tr><th>Prix de réservation</th><td>{{ property.reservation_price }} XAF</td></tr>
+                                <tr><th>Frais de caution</th><td>{{ property.caution_fees }} XAF</td></tr>
+                                <tr><th>Période de contrat</th><td>{{ property.get_contract_period_display }}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            {% if user.is_authenticated %}
-                <a href="{% url 'rental:booking_create' %}" class="btn btn-primary mt-3">Réserver cette propriété</a>
-                <a href="{% url 'rental:rate_property' property.pk %}" class="btn btn-secondary mt-3">Évaluer cette propriété</a>
-            {% endif %}
+            
+            <div class="col-lg-4">
+                <div class="mt-5">
+                    <h5 class="text-primary">Dernières évaluations avec la meilleure note</h5>
+                    
+                    {% if top_ratings %}
+                        <div class="list-group">
+                            {% for rating in top_ratings %}
+                                <div class="list-group-item mb-3">
+                                    <h6><strong>{{ rating.visitor.first_name }} {{ rating.visitor.last_name }}</strong></h6>
+                                    <div class="rating-stars">
+                                        <!-- Render the stars based on the rating -->
+                                        {% for i in stars_range %}
+                                            {% if i <= rating.rating %}
+                                                <i class="fas fa-star text-warning"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <p class="mb-1">{{ rating.comment }}</p>
+                                    <small class="text-muted">{{ rating.created_at|date:"d/m/Y" }}</small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>Aucune évaluation disponible.</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <!-- You can add a map or additional features here -->
+            </div>
         </div>
     </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var myCarousel = new bootstrap.Carousel(document.getElementById('propertyCarousel'), {
+            interval: 5000,
+            wrap: true
+        });
+    });
+</script>
+<script>
+    var propertyId = {{ property.id }};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.getElementById('noter-btn').addEventListener('click', function(event) {
+        event.preventDefault();
+    
+        // Step 1: Ask for access code
+        Swal.fire({
+            title: 'Entrez votre code d\'accès',
+            input: 'text',
+            inputPlaceholder: 'Entrez votre code d\'accès',
+            showCancelButton: true,
+            confirmButtonText: 'Soumettre',
+            preConfirm: (accessCode) => {
+                return fetch(`/validate-access-code/${accessCode}/`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                            `Validation échouée : ${error}`
+                        );
+                    });
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value.visitor_exists) {
+                // Step 2: If visitor exists, log them in and allow rating
+                const visitorName = result.value.visitor_name;
+                Swal.fire({
+                    title: `Hello, ${visitorName}!`,
+                    html: `
+                        <h4>Veuillez noter la propriété</h4>
+                        <form id="rating-form" class="form-group">
+                            <div class="mb-3">
+                                <label for="rating" class="form-label">Note</label>
+                                <div id="star-rating">
+                                    <i class="fas fa-star" data-value="1"></i>
+                                    <i class="fas fa-star" data-value="2"></i>
+                                    <i class="fas fa-star" data-value="3"></i>
+                                    <i class="fas fa-star" data-value="4"></i>
+                                    <i class="fas fa-star" data-value="5"></i>
+                                </div>
+                                <input type="hidden" id="rating" name="rating">
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Commentaire</label>
+                                <textarea id="comment" name="comment" class="form-control" rows="3" placeholder="Laissez un commentaire"></textarea>
+                            </div>
+                        </form>
+                    `,
+                    confirmButtonText: 'Soumettre la note',
+                    showCancelButton: true,
+                    preConfirm: () => {
+                        const rating = document.getElementById('rating').value;
+                        const comment = document.getElementById('comment').value;
+                        if (!rating) {
+                            Swal.showValidationMessage('Veuillez sélectionner une note.');
+                        } else {
+                            return { rating, comment };
+                        }
+                    }
+                }).then((ratingResult) => {
+                    if (ratingResult.isConfirmed) {
+                        const ratingData = ratingResult.value;
+                        // Submit the rating via AJAX or form submission
+                        fetch(`/submit-rating/${propertyId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'  // Ensure CSRF token is passed
+                            },
+                            body: JSON.stringify({
+                                rating: ratingData.rating,
+                                comment: ratingData.comment
+                            })
+                        }).then(response => {
+                            if (response.ok) {
+                                Swal.fire('Merci !', 'Votre note a été soumise.', 'success');
+                            } else {
+                                Swal.fire('Erreur', 'Un problème est survenu lors de la soumission de votre note.', 'error');
+                            }
+                        });
+                    }
+                });
+    
+                // Star rating logic
+                document.querySelectorAll('#star-rating i').forEach(star => {
+                    star.addEventListener('mouseover', function() {
+                        const value = this.getAttribute('data-value');
+                        document.querySelectorAll('#star-rating i').forEach(s => {
+                            if (s.getAttribute('data-value') <= value) {
+                                s.classList.add('text-warning');
+                            } else {
+                                s.classList.remove('text-warning');
+                            }
+                        });
+                    });
+    
+                    star.addEventListener('click', function() {
+                        const value = this.getAttribute('data-value');
+                        document.getElementById('rating').value = value;
+                        document.querySelectorAll('#star-rating i').forEach(s => {
+                            if (s.getAttribute('data-value') <= value) {
+                                s.classList.add('text-warning');
+                            } else {
+                                s.classList.remove('text-warning');
+                            }
+                        });
+                    });
+                });
+    
+            } else if (result.isConfirmed && !result.value.visitor_exists) {
+                // If no visitor found, show the registration form
+                Swal.fire({
+                    title: 'Aucun visiteur trouvé. Veuillez vous inscrire.',
+                    html: `
+                        <form id="registration-form">
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">Prénom</label>
+                                <input type="text" id="first_name" name="first_name" class="form-control" placeholder="Prénom">
+                            </div>
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Nom</label>
+                                <input type="text" id="last_name" name="last_name" class="form-control" placeholder="Nom">
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" id="email" name="email" class="form-control" placeholder="Email">
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone_number" class="form-label">Téléphone</label>
+                                <input type="text" id="phone_number" name="phone_number" class="form-control" placeholder="Téléphone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Adresse</label>
+                                <textarea id="address" name="address" class="form-control" rows="2" placeholder="Adresse"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="sex" class="form-label">Sexe</label>
+                                <select id="sex" name="sex" class="form-control">
+                                    <option value="M">Masculin</option>
+                                    <option value="F">Féminin</option>
+                                    <option value="O">Autre</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="bio" class="form-label">Biographie (optionnelle)</label>
+                                <textarea id="bio" name="bio" class="form-control" rows="3" placeholder="Biographie"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="access_code" class="form-label">Code d'accès</label>
+                                <input type="text" id="access_code" name="access_code" class="form-control" placeholder="Code d'accès">
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirm_access_code" class="form-label">Confirmer le code d'accès</label>
+                                <input type="text" id="confirm_access_code" name="confirm_access_code" class="form-control" placeholder="Confirmer le code d'accès">
+                            </div>
+                        </form>
+                    `,
+                    confirmButtonText: 'S\'inscrire et continuer',
+                    showCancelButton: true,
+                    preConfirm: () => {
+                        const formData = {
+                            first_name: document.getElementById('first_name').value,
+                            last_name: document.getElementById('last_name').value,
+                            email: document.getElementById('email').value,
+                            phone_number: document.getElementById('phone_number').value,
+                            address: document.getElementById('address').value,
+                            sex: document.getElementById('sex').value,
+                            bio: document.getElementById('bio').value,
+                            access_code: document.getElementById('access_code').value,
+                            confirm_access_code: document.getElementById('confirm_access_code').value // Add this line
+                        };
+                        return fetch('/visitor/register/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'  // Ensure CSRF token is passed
+                            },
+                            body: JSON.stringify(formData)
+                        }).then(response => response.json());
+                    }
+                }).then((registrationResult) => {
+                    if (registrationResult.isConfirmed && registrationResult.value.success) {
+                        Swal.fire('Succès !', 'Vous êtes inscrit. Procédez.', 'success');
+                    } else if (registrationResult.value && !registrationResult.value.success) {
+                        Swal.fire('Erreur', registrationResult.value.error, 'error');
+                    } else {
+                        Swal.fire('Erreur', 'L\'inscription a échoué.', 'error');
+                    }
+                });
+            }
+        });
+    });
+    
+</script>
+
+<script>
+
+
+    document.getElementById('reserve-btn').addEventListener('click', function(event) {
+        event.preventDefault();
+    
+        // Step 1: Ask for access code if visitor is not logged in
+        Swal.fire({
+            title: 'Entrez votre code d\'accès',
+            input: 'text',
+            inputPlaceholder: 'Entrez votre code d\'accès',
+            showCancelButton: true,
+            confirmButtonText: 'Soumettre',
+            preConfirm: (accessCode) => {
+                return fetch(`/validate-access-code/${accessCode}/`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                            `Validation échouée : ${error}`
+                        );
+                    });
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value.visitor_exists) {
+                // Step 2: If visitor exists, display the reservation form
+                const visitorName = result.value.visitor_name;
+                Swal.fire({
+                    title: `Hello, ${visitorName}!`,
+                    html: `
+                        <h4>Réserver la propriété</h4>
+                        <form id="reservation-form" class="form-group">
+                            <div class="mb-3">
+                                <label for="reason" class="form-label">Raison de la réservation</label>
+                                <textarea id="reason" name="reason" class="form-control" rows="3" placeholder="Indiquez la raison de la réservation"></textarea>
+                            </div>
+                        </form>
+                    `,
+                    confirmButtonText: 'Soumettre la réservation',
+                    showCancelButton: true,
+                    preConfirm: () => {
+                        const reason = document.getElementById('reason').value;
+                        if (!reason) {
+                            Swal.showValidationMessage('Veuillez indiquer une raison.');
+                        } else {
+                            return { reason };
+                        }
+                    }
+                }).then((reservationResult) => {
+                    if (reservationResult.isConfirmed) {
+                        const reservationData = reservationResult.value;
+                        // Submit the reservation via AJAX or form submission
+                        fetch(`/submit-reservation/${propertyId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'  // Ensure CSRF token is passed
+                            },
+                            body: JSON.stringify({
+                                reason: reservationData.reason
+                            })
+                        }).then(response => {
+                            if (response.ok) {
+                                Swal.fire('Merci !', 'Votre réservation a été soumise.', 'success');
+                            } else {
+                                Swal.fire('Erreur', 'Un problème est survenu lors de la soumission de votre réservation.', 'error');
+                            }
+                        });
+                    }
+                });
+    
+            } else if (result.isConfirmed && !result.value.visitor_exists) {
+                // If no visitor, prompt for registration (same logic as before)
+// Handle visitor registration with updated form fields
+// Updated registration form in SweetAlert
+Swal.fire({
+    title: 'Aucun visiteur trouvé. Veuillez vous inscrire.',
+    html: `
+        <form id="registration-form">
+            <div class="mb-3">
+                <label for="first_name" class="form-label">Prénom</label>
+                <input type="text" id="first_name" name="first_name" class="form-control" placeholder="Prénom">
+            </div>
+            <div class="mb-3">
+                <label for="last_name" class="form-label">Nom</label>
+                <input type="text" id="last_name" name="last_name" class="form-control" placeholder="Nom">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="Email">
+            </div>
+            <div class="mb-3">
+                <label for="phone_number" class="form-label">Téléphone</label>
+                <input type="text" id="phone_number" name="phone_number" class="form-control" placeholder="Téléphone">
+            </div>
+            <div class="mb-3">
+                <label for="address" class="form-label">Adresse</label>
+                <textarea id="address" name="address" class="form-control" rows="2" placeholder="Adresse"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="sex" class="form-label">Sexe</label>
+                <select id="sex" name="sex" class="form-control">
+                    <option value="M">Masculin</option>
+                    <option value="F">Féminin</option>
+                    <option value="O">Autre</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="bio" class="form-label">Biographie (optionnelle)</label>
+                <textarea id="bio" name="bio" class="form-control" rows="3" placeholder="Biographie"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="access_code" class="form-label">Code d'accès</label>
+                <input type="text" id="access_code" name="access_code" class="form-control" placeholder="Code d'accès">
+            </div>
+            <div class="mb-3">
+                <label for="confirm_access_code" class="form-label">Confirmer le code d'accès</label>
+                <input type="text" id="confirm_access_code" name="confirm_access_code" class="form-control" placeholder="Confirmer le code d'accès">
+            </div>
+        </form>
+    `,
+    confirmButtonText: 'S\'inscrire et continuer',
+    showCancelButton: true,
+    preConfirm: () => {
+        const formData = {
+            first_name: document.getElementById('first_name').value,
+            last_name: document.getElementById('last_name').value,
+            email: document.getElementById('email').value,
+            phone_number: document.getElementById('phone_number').value,
+            address: document.getElementById('address').value,
+            sex: document.getElementById('sex').value,
+            bio: document.getElementById('bio').value,
+            access_code: document.getElementById('access_code').value,
+            confirm_access_code: document.getElementById('confirm_access_code').value // Add this line
+        };
+        return fetch('/visitor/register/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'  // Ensure CSRF token is passed
+            },
+            body: JSON.stringify(formData)
+        }).then(response => response.json());
+    }
+}).then((registrationResult) => {
+    if (registrationResult.isConfirmed && registrationResult.value.success) {
+        Swal.fire('Succès !', 'Vous êtes inscrit. Procédez à la réservation.', 'success');
+    } else if (registrationResult.value && !registrationResult.value.success) {
+        Swal.fire('Erreur', registrationResult.value.error, 'error');
+    } else {
+        Swal.fire('Erreur', 'L\'inscription a échoué.', 'error');
+    }
+});
+
+
+            }
+        });
+    });
+    
+</script>
 {% endblock %}

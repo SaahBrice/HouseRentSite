@@ -1,0 +1,16 @@
+{% extends "custom_admin/base.html" %}
+
+{% block title %}{{ object|yesno:"Update,Create" }} {{ model_name|title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ object|yesno:"Update,Create" }} {{ model_name|title }}</h1>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="{% url 'custom_admin:model_list' model_name %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

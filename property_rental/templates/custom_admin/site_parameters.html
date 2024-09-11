@@ -1,0 +1,23 @@
+{% extends "custom_admin/base.html" %}
+
+{% block title %}Site Settings{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Site Settings</h1>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+
+{% if site_params and site_params.logo %}
+<div class="mt-4">
+    <h3>Current Logo</h3>
+    <img src="{{ site_params.logo.url }}" alt="Site Logo" style="max-width: 200px;">
+</div>
+{% endif %}
+
+{% endblock %}

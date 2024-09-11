@@ -127,6 +127,8 @@ class Rating(models.Model):
     visitor = models.ForeignKey(Visitor, on_delete=models.CASCADE, verbose_name="Visiteur")
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], verbose_name="Note", default=2)
     comment = models.TextField(verbose_name="Commentaire", blank=True)
+    is_new = models.BooleanField(default=True)
+    property_rated = models.ForeignKey(Property, on_delete=models.CASCADE, verbose_name="Propriété", null =True)
 
     class Meta:
         verbose_name = "Évaluation"
@@ -140,7 +142,8 @@ class BookingReservation(models.Model):
     date = models.DateTimeField(auto_now_add=True, verbose_name="Date de réservation")
     is_handled = models.BooleanField(default=False, verbose_name="Traitée")
     booking_reason = models.TextField(verbose_name="Raison de la réservation", blank=True)
-
+    is_new = models.BooleanField(default=True)
+    property= models.ForeignKey(Property, on_delete=models.CASCADE, verbose_name="Propriété", null =True)
     class Meta:
         verbose_name = "Réservation"
         verbose_name_plural = "Réservations"

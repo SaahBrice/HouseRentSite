@@ -18,4 +18,7 @@ urlpatterns = [
     path('bookings/create/<int:property_id>/', views.booking_create, name='booking_create'),
     path('saved/', views.saved_properties, name='saved_properties'),
     path('rate/<int:property_id>/', views.rate_property, name='rate_property'),
+    path('validate-access-code/<str:access_code>/', views.validate_access_code, name='validate_access_code'),
+    path('submit-rating/<int:property_id>/', views.submit_rating, name='submit_rating'),
+    path('submit-reservation/<int:property_id>/', views.submit_reservation, name='submit_reservation'),
 ]

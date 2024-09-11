@@ -43,6 +43,16 @@ class RatingAdmin(admin.ModelAdmin):
     list_filter = ('rating',)
     search_fields = ('visitor__first_name', 'visitor__last_name')
 
+    # Optionally, you can add custom permissions logic here if needed.
+    def get_queryset(self, request):
+        # Customize to restrict certain users if needed
+        queryset = super().get_queryset(request)
+        if not request.user.is_superuser:
+            # Apply restrictions
+            queryset = queryset.filter(visitor=request.user.visitor)
+        return queryset
+
+
 @admin.register(BookingReservation)
 class BookingReservationAdmin(admin.ModelAdmin):
     list_display = ('visitor', 'date', 'is_handled', 'booking_reason')
