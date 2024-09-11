@@ -44,15 +44,15 @@
 
         <!-- Navbar Start -->
         <div class="container-fluid nav-bar bg-transparent">
-            <nav class="navbar navbar-expand-lg bg-white navbar-light py-0 px-4">
+            <nav class="navbar navbar-expand-lg bg-white navbar-light py-0 px-2">
                 <a href="{% url 'rental:home' %}" class="navbar-brand d-flex align-items-center text-center">
                     <div class="icon p-2 me-2">
                         <img class="img-fluid" src="{% static 'img/cicc-logo.png' %}" alt="Icon" style="width: 30px; height: 30px;">
                     </div>
                     <div class="icon p-2 me-2">
-                        <img class="img-fluid" src="{% static 'img/logo.png' %}" alt="Icon" style="width: 50px; height: 50px;">
+                        <img class="img-fluid" src="{% static 'img/logo.png' %}" alt="Icon" style="width: 40px; height: 40px;">
                     </div>
-                    <h1 class="m-0 text-primary fw-bold">IMMO TEKEU</h1>
+                    <h6 class="m-0 text-primary fw-bold">IMMOBILIER TEKEU</h6>
                 </a>
                 <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                     <span class="navbar-toggler-icon"></span>
@@ -61,9 +61,9 @@
                     <div class="navbar-nav ms-auto">
                         <a href="{% url "rental:home" %}" class="nav-item nav-link active">Accueil</a>
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Propriétés</a>
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Immobilier</a>
                             <div class="dropdown-menu rounded-0 m-0">
-                                <a href="{% url 'rental:property_list' %}" class="dropdown-item">Liste des propriétés</a>
+                                <a href="{% url 'rental:property_list' %}" class="dropdown-item">Liste des immobiliers</a>
                             </div>
                         </div>
                         <a href="{% url "rental:contact" %}" class="nav-item nav-link">Contact</a>
@@ -83,8 +83,8 @@
         <div class="container-fluid header bg-white p-0">
             <div class="row g-0 align-items-center flex-column-reverse flex-md-row">
                 <div class="col-md-6 p-5 mt-lg-5 ">
-                    <h1 class="display-5 animated fadeIn mb-4 fw-bold">Trouvez Votre <span class="text-primary">Maison Idéale</span> Pour Un Confort Optimal</h1>
-                    <p class="animated fadeIn mb-4 pb-2">Découvrez un choix de maisons qui allient espace, emplacement et confort. Que vous emménagiez seul ou en famille, nous avons des options adaptées à votre mode de vie et à votre budget.</p>
+                    <h1 class="display-5 animated fadeIn mb-4 fw-bold">Trouvez Votre <span class="text-primary">Immobilier Idéale</span> Pour Un Confort Optimal</h1>
+                    <p class="animated fadeIn mb-4 pb-2">Découvrez un choix d'immobilier qui allient espace, emplacement et confort. Que vous emménagiez seul ou en famille, nous avons des options adaptées à votre mode de vie et à votre budget.</p>
                     <a href="" class="btn btn-primary py-3 px-5 me-3 animated fadeIn">Commencez Votre Recherche</a>
                 </div>
                 <div class="col-md-6 animated fadeIn">
